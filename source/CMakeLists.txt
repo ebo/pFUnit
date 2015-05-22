@@ -46,6 +46,7 @@ list(APPEND srcs ParameterizedTestCase.F90)
 list(APPEND srcs Params.F90)
 
 list(APPEND srcs XmlPrinter.F90)
+list(APPEND srcs TAPPrinter.F90)
 list(APPEND srcs ResultPrinter.F90)
 
 if ( ROBUST )

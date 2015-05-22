@@ -38,6 +38,7 @@ module pFUnit_mod
 
    use TestListener_mod
    use XmlPrinter_mod
+   use TAPPrinter_mod
    use ResultPrinter_mod
    use DebugListener_mod
 
@@ -73,6 +74,7 @@ module pFUnit_mod
    public :: ResultPrinter
    public :: newResultPrinter
    public :: newXmlPrinter
+   public :: newTAPPrinter
    public :: DebugListener
 
 #ifdef BUILD_ROBUST

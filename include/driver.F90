@@ -20,6 +20,7 @@ program main
    logical :: useRobustRunner
    logical :: useSubsetRunner
    logical :: printXmlFile
+   logical :: printTAPFile
    integer :: numSkip
    logical :: useMpi
 ! Regular Output
@@ -37,6 +38,11 @@ program main
    type (DebugListener) :: debugger
    character(len=128) :: suiteName
 
+! TAP Additions
+   character(len=:), allocatable :: TAPFileName
+   integer :: TAPFileUnit
+   logical :: TAPFileOpened
+
 ! Support for the runs
    class (ParallelContext), allocatable :: context
    type (TestResult) :: result
@@ -44,6 +50,7 @@ program main
    useRobustRunner = .false.
    useSubsetRunner = .false.
    printXmlFile = .false.
+   printTAPFile = .false.
    numSkip = 0
    numListeners = 1; iListener = 0
 
@@ -112,6 +119,21 @@ program main
             printXmlFile = .true.
             numListeners = numListeners + 1
          end if
+
+      case ('-tap')
+         i = i + 1
+         if (i > numArguments) call commandLineArgumentError()
+         TAPFileName = getCommandLineArgument(i)
+         open(newUnit=TAPFileUnit, file=TAPFileName,  form='formatted', &
+              & status='unknown', access='sequential', iostat=iostat)
+         if(iostat /= 0) then
+            write(*,*) 'Could not open TAP file ', TAPFileName, &
+                 ', error: ', iostat
+         else
+            printTAPFile = .true.
+            numListeners = numListeners + 1
+         end if
+
       case ('-name')
          i = i + 1
          call get_command_argument(i, value=suiteName)
@@ -129,6 +151,11 @@ program main
    if(printXmlFile) then
       iListener = iListener + 1
       allocate(listeners(iListener)%pListener, source=newXmlPrinter(xmlFileUnit))
+   end if
+! TAP listener
+   if(printTAPFile) then
+      iListener = iListener + 1
+      allocate(listeners(iListener)%pListener, source=newTAPPrinter(TAPFileUnit))
    end if
 ! Debugger
    if(debug) then
@@ -186,6 +213,12 @@ program main
       end if
    end if
 
+   if(printTAPFile) then
+      inquire(unit=TAPFileUnit, opened=TAPFileOpened)
+      if(TAPFileOpened) then
+         close(TAPFileUnit)
+      end if
+   end if
    call finalize(result%wasSuccessful())
 
 contains
