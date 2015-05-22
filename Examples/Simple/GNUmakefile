@@ -58,9 +58,11 @@ all: $(EXE)
 # endif
 
 ifeq ($(USEMPI),YES)
-	mpirun -np 1 ./$(EXE) -xml tests.xml
+	-mpirun -np 1 ./$(EXE) -xml tests.xml
+	-mpirun -np 1 ./$(EXE) -tap tests.tap
 else
-	./$(EXE) -xml tests.xml
+	-./$(EXE) -xml tests.xml
+	-./$(EXE) -tap tests.tap
 endif
 
 SUT:
@@ -79,7 +81,7 @@ clean: local-E0-clean
 local-E0-clean:
 	make -C $(SRC_DIR) clean
 	make -C $(TEST_DIR) clean
-	rm -f $(EXE) *$(OBJ_EXT) tests.xml
+	rm -f $(EXE) *$(OBJ_EXT) tests.xml test.tap
 
 ifeq ($(UNAME),Windows)
 	export PFUNIT
