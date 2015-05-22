@@ -2,6 +2,8 @@
 
 # Note: unused references to SRC_DIR removed.
 
+include $(PFUNIT)/include/base.mk
+
 SRCS = $(wildcard *.pf)
 OBJS = $(SRCS:.pf=$(OBJ_EXT))
 
